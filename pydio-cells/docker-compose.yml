@@ -10,6 +10,7 @@ services:
 
   cells:
     image: linuxserver/pydio-cells:4.4.9 
+    container_name: pydio-cells
     restart: always
     platform: linux/arm64
     networks:
@@ -25,12 +26,13 @@ services:
     depends_on:
       - mysql
     volumes:
-      - cellsdir:/var/cells
+      - data:/config
       - ./install-conf.yml:/pydio/config/install.yml:ro
 
   mysql:
     image: mysql:8
     restart: always
+    container_name: pydio-mysql
     networks:
       - cells 
     environment:
@@ -43,5 +45,5 @@ services:
       - mysqldir:/var/lib/mysql
 
 volumes:
-    cellsdir: {}
+    data: {}
     mysqldir: {}
