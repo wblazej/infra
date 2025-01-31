@@ -1,0 +1,47 @@
+version: '3.7'
+
+networks:
+  cells:
+    name: cells-network
+  web-proxy:
+    external: true
+
+services:
+
+  cells:
+    image: linuxserver/pydio-cells:4.4.9 
+    restart: always
+    platform: linux/arm64
+    networks:
+      - cells
+      - web-proxy 
+    environment:
+      - CELLS_INSTALL_YAML=/pydio/config/install.yml
+      - CELLS_NO_TLS=1
+      - VIRTUAL_PORT=8080
+      - VIRTUAL_HOST=s.wblz.xyz
+    expose:
+      - 8080
+    depends_on:
+      - mysql
+    volumes:
+      - cellsdir:/var/cells
+      - ./install-conf.yml:/pydio/config/install.yml:ro
+
+  mysql:
+    image: mysql:8
+    restart: always
+    networks:
+      - cells 
+    environment:
+      MYSQL_ROOT_PASSWORD: n6cqOAcwacXhhMN 
+      MYSQL_DATABASE: cells
+      MYSQL_USER: pydio
+      MYSQL_PASSWORD: n6cqOAcwacXhhMN
+    command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci]
+    volumes:
+      - mysqldir:/var/lib/mysql
+
+volumes:
+    cellsdir: {}
+    mysqldir: {}
